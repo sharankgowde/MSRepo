@@ -37,6 +37,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Download build artifacts
@@ -45,9 +48,15 @@ jobs:
           name: react-build
           path: dist
 
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FE940C7D5BCA4922BD46516C3CFA79D4 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7C064EFA4362473F81A897FE54A28BD4 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_16274AEA79F54ADF97FEB9ED3EC98531 }}
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: eventfrontend
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: dist
